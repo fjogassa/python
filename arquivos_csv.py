@@ -11,8 +11,11 @@ class Arquivo:
     self.csv_separator = csv_separator
     self.decimal_separator = decimal_separator
 
-  def le_arquivo(self):
+  def le_arquivo(self) -> pd.DataFrame:
     return pd.read_csv(self.nome_arquivo, sep=self.csv_separator, decimal=self.decimal_separator)
+  
+  def getColunas(self, file, colunas):
+    return file[colunas]
 
   def manipula_arquivo(self, file):        
     # Filtra os dez primeiros resultados
@@ -40,7 +43,7 @@ class Arquivo:
     print(f'Aprovados: {df_aprovados}')
 
 if __name__ == "__main__":
-  arquivo_csv = Arquivo('alunos.csv', ',', '.')
+  arquivo_csv = Arquivo('.\\arquivos\\alunos.csv', ',', '.')
   arquivo_data_frame = arquivo_csv.le_arquivo()
   print(arquivo_data_frame)
   arquivo_data_frame = arquivo_csv.manipula_arquivo(arquivo_data_frame)

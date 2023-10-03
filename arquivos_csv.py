@@ -2,30 +2,32 @@ import pandas as pd
 
 class Arquivo:
   nome_arquivo:str = None
-  separador:str = None
+  csv_separator:str = None
   decimal_separator:str = None
-  arquivo_data_frame: any = None
+  arquivo_data_frame = None
   # constructor
-  def __init__(self, nome_arquivo = None, separador = None, decimal_separator = None) -> None:
+  def __init__(self, nome_arquivo = None, csv_separator = None, decimal_separator = None):
     self.nome_arquivo = nome_arquivo
-    self.separador = separador
+    self.csv_separator = csv_separator
     self.decimal_separator = decimal_separator
 
-  def manipula_arquivo(self):
-    self.arquivo_data_frame = pd.read_csv(self.nome_arquivo, sep = self.separador, decimal = self.decimal_separator)    
-    print(self.arquivo_data_frame)
+  def le_arquivo(self):
+    return pd.read_csv(self.nome_arquivo, sep=self.csv_separator, decimal=self.decimal_separator)
+
+  def manipula_arquivo(self, file):        
     # Filtra os dez primeiros resultados
-    self.arquivo_data_frame.head(10)
-    self.arquivo_data_frame.isnull().sum()
+    file.head(10)
+    file.isnull().sum()
     
     # Tratamento para converter notas nulas em zero
     notas_nulas = {"Notas": 0,"Media": 0}
-    self.arquivo_data_frame.fillna(value = notas_nulas, inplace = True)
+    file.fillna(value = notas_nulas, inplace = True)
 
     # Removendo com base no filtro Nome = Alice ou Nome = Carlos
-    alunos_que_sairam = self.arquivo_data_frame.query('Nome == "Alice" | Nome == "Carlos"').index
-    self.arquivo_data_frame.drop(alunos_que_sairam, axis=0, inplace=True)
-    print(f'Sem os alunos que saíram\n {self.arquivo_data_frame}')    
+    alunos_que_sairam = file.query('Nome == "Alice" | Nome == "Carlos"').index
+    file.drop(alunos_que_sairam, axis=0, inplace=True)
+    #print(f'Sem os alunos que saíram\n {file}') 
+    return file
 
   # Criando arquivo CSV
   def cria_arquivo(self, nome_arquivo_destino:str = None) -> None:    
@@ -38,6 +40,9 @@ class Arquivo:
     print(f'Aprovados: {df_aprovados}')
 
 if __name__ == "__main__":
-  arquivo_csv = Arquivo('alunos.csv', ';', '.')
-  arquivo_csv.manipula_arquivo()
-  arquivo_csv.cria_arquivo('alunos_aprovados.csv')
+  arquivo_csv = Arquivo('alunos.csv', ',', '.')
+  arquivo_data_frame = arquivo_csv.le_arquivo()
+  print(arquivo_data_frame)
+  arquivo_data_frame = arquivo_csv.manipula_arquivo(arquivo_data_frame)
+  print(f'Após a manipulação\n {arquivo_data_frame}')
+  #arquivo_csv.cria_arquivo('alunos_aprovados.csv')

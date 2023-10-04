@@ -18,13 +18,22 @@ class Metricas:
 
   def __init__(self) -> None:    
     # Lendo arquivo
-    self.arquivo_csv = pd.read_csv(".\\arquivos\metricas.csv", sep=",", decimal=".")          
+    self.arquivo_csv = pd.read_csv(".\\arquivos\metricas.csv", sep=",", decimal=".")    
+    #print(f'Antes: {self.arquivo_csv}')
+    #self.arquivo_csv.fillna(None, inplace=True)
+    #print(f'Depois: {self.arquivo_csv}')
 
   # Mudando o tipo da coluna de object para Datetime pelo nome das colunas
   def trataColunaData(self) -> None:
     # Converter as colunas de data para o tipo date time
-    for i in self.colunas_data:
+    for i in self.colunas_data:      
       self.arquivo_csv[i] = pd.to_datetime(self.arquivo_csv[i])    
+    print(f'Antes: {self.arquivo_csv.query("Done.notnull()")["Done"].head(10)}')    
+    registros_nulo = self.arquivo_csv.query('Done.isnull()').index
+    self.arquivo_csv.drop(registros_nulo, axis=0, inplace=True)    
+    print(f'Depois: {self.arquivo_csv["Done"].head(10)}')
+    #self.arquivo_csv['Done'].fillna(value=None, inplace=True)
+    #print(f'Depois: {self.arquivo_csv["Done"].isnull().sum()}')
 
     # Alimentar os campos calculados
     for key, value in self.colunas_calculadas.items():                  

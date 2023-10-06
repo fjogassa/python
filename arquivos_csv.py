@@ -33,7 +33,8 @@ class Arquivo:
     return file
 
   # Criando arquivo CSV
-  def cria_arquivo(self, nome_arquivo_destino:str = None) -> None:    
+  """
+  def cria_arquivo(self, nome_arquivo_destino:str = None) -> None:
     aprovados = self.arquivo_data_frame['Aprovado'] == True
     df_aprovados = self.arquivo_data_frame[aprovados]
     print(f'Lista dos Aprovados\n {df_aprovados}') 
@@ -41,6 +42,9 @@ class Arquivo:
     df_aprovados.to_csv(nome_arquivo_destino, sep=';')
     df_aprovados.replace({'Notas':7.0}, 8.0, inplace=True)
     print(f'Aprovados: {df_aprovados}')
+  """
+  def cria_arquivo(self, nome_arquivo_destino, file:pd.DataFrame) -> None:
+    file.to_csv(nome_arquivo_destino)
 
 if __name__ == "__main__":
   arquivo_csv = Arquivo('.\\arquivos\\alunos.csv', ',', '.')

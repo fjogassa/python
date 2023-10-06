@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Dashboards - Elotech")
+st.set_page_config(layout="wide", page_title="Dashboards - Elotech")
 
 # Decorator (annotation) sempre acima de uma função
 # Este decorator serve para armazenar o CSV em cache, com isso não carrega a cada reload.

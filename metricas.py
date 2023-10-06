@@ -27,7 +27,8 @@ class Metricas:
   def trataColunaData(self) -> None:
     # Converter as colunas de data para o tipo date time
     for i in self.colunas_data:      
-      self.arquivo_csv[i] = pd.to_datetime(self.arquivo_csv[i])    
+      self.arquivo_csv[i] = pd.to_datetime(self.arquivo_csv[i])   
+
     print(f'Antes: {self.arquivo_csv.query("Done.notnull()")["Done"].head(10)}')    
     registros_nulo = self.arquivo_csv.query('Done.isnull()').index
     self.arquivo_csv.drop(registros_nulo, axis=0, inplace=True)    
@@ -37,10 +38,21 @@ class Metricas:
 
     # Alimentar os campos calculados
     for key, value in self.colunas_calculadas.items():                  
-      self.arquivo_csv[key] = self.getDiferencaDataEmDias(datetime(self.arquivo_csv[value[0]]), datetime(self.arquivo_csv[value[0]]))
+      print(f'Key: {key}, Value 0: {value[0]}, Value 1: {value[1]}')
+      #print(self.arquivo_csv[value[1]])
+      self.arquivo_csv.assign(key = lambda x: 
+                              #print(f'1: {x[value[0]]}, 2: {x[value[1]]}')
+                              print(self.numOfDays(x[value[0]], x[value[1]]))
+                              )
+                              #self.numOfDays(x[value[0]], x[value[1]]))
+      #self.arquivo_csv[key] = self.numOfDays(datetime(self.arquivo_csv[value[0]]), datetime(self.arquivo_csv[value[0]]))
 
-  def getDiferencaDataEmDias(self, data1, data2):    
-    return (data1 - data2).days
+  def numOfDays(date1, date2):
+    #check which date is greater to avoid days output in -ve number
+    if date2 > date1:   
+        return (date2-date1).days
+    else:
+        return (date1-date2).days
   
   def salvaArquivo(self, nome_arquivo_destino: str = "") -> None:
     if (nome_arquivo_destino != ""):

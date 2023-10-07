@@ -6,6 +6,9 @@ class LoadMetricas:
   def __init__(self):
     self.arquivo_inicial = pd.read_csv(".\\arquivos\\metricas.csv")
 
+  def criaDataFrameSaida(self, file: pd.DataFrame, campos) -> pd.DataFrame:
+    return self.arquivo_inicial[campos].copy()
+
   def limpaCamposDataNula(self, campo:str):    
       self.arquivo_inicial[campo].fillna(value=pd.NaT, inplace=True)      
 
@@ -25,4 +28,7 @@ if __name__ == "__main__":
   metricas.limpaCamposDataNula("Code review")
   metricas.limpaCamposDataNula("In Progress")
   metricas.diferencaEntreDatas("Code review", "In Progress", "Devtime")    
-  metricas.arquivo_inicial.to_csv("novo_metricas.csv", sep=";", decimal=".")
+  campos_to_copy = ['id', 'To Do', 'In Progress', 'Assignee']
+  df = metricas.criaDataFrameSaida(metricas.arquivo_inicial, campos_to_copy)
+  print(df)
+  metricas.arquivo_inicial.to_csv("novo_metricas.csv", sep=";", decimal=".")  

@@ -2,11 +2,6 @@ import pandas as pd
 from datetime import datetime
 
 class ArquivoCSV:
-  nome_arquivo:str = None
-  csv_separator:str = None
-  decimal_separator:str = None
-  arquivo_data_frame = None
-
   # constructor
   def __init__(self, nome_arquivo = None, csv_separator = None, decimal_separator = None):
     self.nome_arquivo = nome_arquivo
@@ -19,6 +14,11 @@ class ArquivoCSV:
     except Exception as e:
       print(f'Operação foi finalizada por um erro: {e}')
       return None
+    
+  def retiraEspacaoNomeColuna(self, file: pd.DataFrame):
+    cols = file.columns
+    cols = cols.map(lambda x: x.replace(' ', '-') if isinstance(x, str) else x)
+    file.columns = cols
           
   def criaDataFrameSaida(self, file: pd.DataFrame, campos) -> pd.DataFrame:
     return file[campos].copy()
@@ -55,6 +55,7 @@ class ArquivoCSV:
 if __name__ == "__main__":
   arquivo_csv = ArquivoCSV('.\\arquivos\\alunos.csv', ',', '.')
   arquivo_data_frame = arquivo_csv.leArquivo()
+  arquivo_csv.retiraEspacaoNomeColuna(arquivo_data_frame)  
   print(arquivo_data_frame)
   arquivo_data_frame = arquivo_csv.manipulaArquivo(arquivo_data_frame)
   print(f'Após a manipulação\n {arquivo_data_frame}')  

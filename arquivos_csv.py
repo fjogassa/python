@@ -1,20 +1,32 @@
 import pandas as pd
+from datetime import datetime
 
-class Arquivo:
-  nome_arquivo:str = None
-  csv_separator:str = None
-  decimal_separator:str = None
-  arquivo_data_frame = None
+class ArquivoCSV:
   # constructor
   def __init__(self, nome_arquivo = None, csv_separator = None, decimal_separator = None):
     self.nome_arquivo = nome_arquivo
     self.csv_separator = csv_separator
     self.decimal_separator = decimal_separator
 
-  def le_arquivo(self):
-    return pd.read_csv(self.nome_arquivo, sep=self.csv_separator, decimal=self.decimal_separator)
+  def leArquivo(self) -> pd.DataFrame:
+    try:
+      return pd.read_csv(self.nome_arquivo, sep=self.csv_separator, decimal=self.decimal_separator)
+    except Exception as e:
+      print(f'Operação foi finalizada por um erro: {e}')
+      return None
+    
+  def retiraEspacaoNomeColuna(self, file: pd.DataFrame):
+    cols = file.columns
+    cols = cols.map(lambda x: x.replace(' ', '-') if isinstance(x, str) else x)
+    file.columns = cols
+          
+  def criaDataFrameSaida(self, file: pd.DataFrame, campos) -> pd.DataFrame:
+    return file[campos].copy()
+  
+  def getColunas(self, file, colunas):
+    return file[colunas]
 
-  def manipula_arquivo(self, file):        
+  def manipulaArquivo(self, file):        
     # Filtra os dez primeiros resultados
     file.head(10)
     file.isnull().sum()
@@ -30,19 +42,20 @@ class Arquivo:
     return file
 
   # Criando arquivo CSV
-  def cria_arquivo(self, nome_arquivo_destino:str = None) -> None:    
-    aprovados = self.arquivo_data_frame['Aprovado'] == True
-    df_aprovados = self.arquivo_data_frame[aprovados]
-    print(f'Lista dos Aprovados\n {df_aprovados}') 
-    
-    df_aprovados.to_csv(nome_arquivo_destino, sep=';')
-    df_aprovados.replace({'Notas':7.0}, 8.0, inplace=True)
-    print(f'Aprovados: {df_aprovados}')
+  def criaArquivo(self, file:pd.DataFrame, nome_arquivo_destino, separador, decimalSeparador: str) -> None:
+    if str(nome_arquivo_destino).lstrip() != "":
+      file.to_csv(nome_arquivo_destino + datetime.now().strftime("%H%M%S%f") + ".csv", sep=separador, decimal=decimalSeparador)
+    else:
+      raise Exception("Não foi possível criar o arquivo")
+
+  # Limpa os campos do tipo datetime para NaT (nulo)  
+  def limpaCamposDataNula(self, file: pd.DataFrame, campo) -> None:
+    file[campo].fillna(value=pd.NaT, inplace=True)
 
 if __name__ == "__main__":
-  arquivo_csv = Arquivo('alunos.csv', ',', '.')
-  arquivo_data_frame = arquivo_csv.le_arquivo()
+  arquivo_csv = ArquivoCSV('.\\arquivos\\alunos.csv', ',', '.')
+  arquivo_data_frame = arquivo_csv.leArquivo()
+  arquivo_csv.retiraEspacaoNomeColuna(arquivo_data_frame)  
   print(arquivo_data_frame)
-  arquivo_data_frame = arquivo_csv.manipula_arquivo(arquivo_data_frame)
-  print(f'Após a manipulação\n {arquivo_data_frame}')
-  #arquivo_csv.cria_arquivo('alunos_aprovados.csv')
+  arquivo_data_frame = arquivo_csv.manipulaArquivo(arquivo_data_frame)
+  print(f'Após a manipulação\n {arquivo_data_frame}')  
